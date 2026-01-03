@@ -5,7 +5,7 @@ import { FileText, ExternalLink, Download, Calendar, Shield, X } from 'lucide-re
 
 // Configure your GitHub repo here
 const GITHUB_CONFIG = {
-  owner: 'lefgiak',
+  owner: 'Lefgk',
   repo: 'AuditsBangKok',
   branch: 'main',
   auditsPath: 'audits',
