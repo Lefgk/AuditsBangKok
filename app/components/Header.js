@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, Shield, ArrowUpRight } from 'lucide-react'
+import { Menu, X, ArrowUpRight } from 'lucide-react'
+import { TempleIcon } from './TempleIcon'
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -29,10 +30,10 @@ export function Header() {
     }`}>
       <nav className="container mx-auto px-6">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo with Temple Icon */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative">
-              <Shield className="w-8 h-8 text-[#B6509E]" />
+              <TempleIcon className="w-9 h-9 transition-transform group-hover:scale-105" />
             </div>
             <span className="text-xl font-bold">
               Bangkok<span className="gradient-text">Audits</span>
@@ -45,7 +46,7 @@ export function Header() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-[#A1A1AA] hover:text-white transition-colors font-medium text-sm link-hover"
+                className="text-[#9CA3AF] hover:text-white transition-colors font-medium text-sm link-hover"
               >
                 {link.name}
               </Link>
@@ -74,13 +75,13 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden mt-6 pb-6 border-t border-white/10 pt-6">
+          <div className="md:hidden mt-6 pb-6 border-t border-[rgba(212,175,55,0.15)] pt-6">
             <div className="flex flex-col gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-[#A1A1AA] hover:text-white transition-colors font-medium py-2"
+                  className="text-[#9CA3AF] hover:text-white transition-colors font-medium py-2"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}

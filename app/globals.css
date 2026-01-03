@@ -3,15 +3,20 @@
 @tailwind utilities;
 
 :root {
-  --accent-primary: #B6509E;
-  --accent-secondary: #2EBAC6;
-  --accent-gradient: linear-gradient(135deg, #B6509E 0%, #2EBAC6 100%);
-  --bg-dark: #0E0E0E;
-  --bg-card: #1A1A1A;
-  --bg-card-hover: #242424;
+  /* Bangkok Gold Theme */
+  --accent-gold: #D4AF37;
+  --accent-gold-light: #F4C430;
+  --accent-gold-dark: #C9A227;
+  --accent-maroon: #722F37;
+  --accent-gradient: linear-gradient(135deg, #D4AF37 0%, #F4C430 50%, #C9A227 100%);
+  --accent-gradient-warm: linear-gradient(135deg, #D4AF37 0%, #722F37 100%);
+  --bg-dark: #0A0A0B;
+  --bg-card: #141416;
+  --bg-card-hover: #1C1C1F;
   --text-primary: #FFFFFF;
-  --text-secondary: #A1A1AA;
-  --border-color: rgba(255, 255, 255, 0.08);
+  --text-secondary: #9CA3AF;
+  --border-color: rgba(212, 175, 55, 0.15);
+  --border-gold: rgba(212, 175, 55, 0.3);
 }
 
 * {
@@ -30,12 +35,19 @@ body {
 
 /* Typography */
 .font-mono {
-  font-family: 'Roboto Mono', 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', 'Roboto Mono', monospace;
 }
 
-/* Gradient Text */
+/* Gradient Text - Gold */
 .gradient-text {
   background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-text-warm {
+  background: var(--accent-gradient-warm);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -51,19 +63,20 @@ body {
 
 .card:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(255, 255, 255, 0.12);
+  border-color: var(--border-gold);
   transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(212, 175, 55, 0.08);
 }
 
 .card-highlight {
-  background: linear-gradient(135deg, rgba(182, 80, 158, 0.1) 0%, rgba(46, 186, 198, 0.1) 100%);
-  border: 1px solid rgba(182, 80, 158, 0.2);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.08) 0%, rgba(114, 47, 55, 0.08) 100%);
+  border: 1px solid var(--border-gold);
 }
 
 /* Buttons */
 .btn-primary {
   background: var(--accent-gradient);
-  color: white;
+  color: #0A0A0B;
   font-weight: 600;
   padding: 14px 28px;
   border-radius: 12px;
@@ -75,9 +88,9 @@ body {
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  opacity: 0.95;
   transform: translateY(-1px);
-  box-shadow: 0 10px 30px rgba(182, 80, 158, 0.3);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.35);
 }
 
 .btn-secondary {
@@ -86,7 +99,7 @@ body {
   font-weight: 600;
   padding: 14px 28px;
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-gold);
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -95,8 +108,8 @@ body {
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--accent-gold);
 }
 
 /* Stats */
@@ -106,6 +119,19 @@ body {
   border-radius: 20px;
   padding: 32px;
   text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--accent-gradient);
+  opacity: 0.6;
 }
 
 .stat-value {
@@ -127,9 +153,9 @@ body {
 
 /* Glass effect */
 .glass {
-  background: rgba(26, 26, 26, 0.8);
+  background: rgba(10, 10, 11, 0.85);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* Badge */
@@ -144,9 +170,9 @@ body {
 }
 
 .badge-gradient {
-  background: linear-gradient(135deg, rgba(182, 80, 158, 0.15) 0%, rgba(46, 186, 198, 0.15) 100%);
-  border: 1px solid rgba(182, 80, 158, 0.3);
-  color: #fff;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(114, 47, 55, 0.15) 100%);
+  border: 1px solid var(--border-gold);
+  color: var(--accent-gold);
 }
 
 /* Audit Card */
@@ -156,36 +182,55 @@ body {
   border-radius: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
+  position: relative;
+}
+
+.audit-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--accent-gradient);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .audit-card:hover {
-  border-color: rgba(182, 80, 158, 0.4);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border-color: var(--border-gold);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 40px rgba(212, 175, 55, 0.1);
   transform: translateY(-4px);
+}
+
+.audit-card:hover::before {
+  opacity: 1;
 }
 
 /* Severity badges */
 .severity-critical {
-  background: #FF4757;
+  background: linear-gradient(135deg, #FF4757, #C0392B);
   color: white;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 6px;
   font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .severity-high {
-  background: #FF6B35;
+  background: linear-gradient(135deg, #FF6B35, #E74C3C);
   color: white;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 6px;
   font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .severity-medium {
-  background: #FFA502;
-  color: #0E0E0E;
+  background: linear-gradient(135deg, #FFA502, #F39C12);
+  color: #0A0A0B;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 6px;
@@ -193,8 +238,8 @@ body {
 }
 
 .severity-low {
-  background: #2ED573;
-  color: #0E0E0E;
+  background: linear-gradient(135deg, #2ED573, #27AE60);
+  color: #0A0A0B;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 6px;
@@ -202,17 +247,19 @@ body {
 }
 
 .severity-info {
-  background: #3742FA;
+  background: linear-gradient(135deg, #3742FA, #2980B9);
   color: white;
   font-size: 12px;
   padding: 4px 10px;
   border-radius: 6px;
   font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 /* Section */
 .section {
   padding: 120px 0;
+  position: relative;
 }
 
 .section-header {
@@ -221,11 +268,11 @@ body {
 }
 
 .section-label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  color: var(--text-secondary);
+  letter-spacing: 3px;
+  color: var(--accent-gold);
   margin-bottom: 16px;
 }
 
@@ -244,29 +291,46 @@ body {
   line-height: 1.6;
 }
 
-/* Grid backgrounds */
+/* Thai Pattern Grid */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
-/* Glow effects */
-.glow-purple {
+/* Thai Decorative Border */
+.thai-border {
+  position: relative;
+}
+
+.thai-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 4px;
+  background: var(--accent-gradient);
+  border-radius: 2px;
+}
+
+/* Glow effects - Gold */
+.glow-gold {
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(182, 80, 158, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
 
-.glow-cyan {
+.glow-maroon {
   position: absolute;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(46, 186, 198, 0.15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(114, 47, 55, 0.1) 0%, transparent 70%);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -277,8 +341,19 @@ body {
   50% { transform: translateY(-20px); }
 }
 
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
 }
 
 /* Scrollbar */
@@ -291,12 +366,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--bg-card);
+  background: rgba(212, 175, 55, 0.3);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--bg-card-hover);
+  background: rgba(212, 175, 55, 0.5);
 }
 
 /* Loading */
@@ -304,7 +379,7 @@ body {
   width: 24px;
   height: 24px;
   border: 2px solid var(--border-color);
-  border-top-color: #B6509E;
+  border-top-color: var(--accent-gold);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -313,7 +388,7 @@ body {
   to { transform: rotate(360deg); }
 }
 
-/* Link hover effect */
+/* Link hover effect - Gold */
 .link-hover {
   position: relative;
 }
@@ -333,12 +408,13 @@ body {
   width: 100%;
 }
 
-/* Feature icon */
+/* Feature icon - Gold themed */
 .feature-icon {
   width: 56px;
   height: 56px;
   border-radius: 14px;
-  background: linear-gradient(135deg, rgba(182, 80, 158, 0.15) 0%, rgba(46, 186, 198, 0.15) 100%);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15) 0%, rgba(114, 47, 55, 0.1) 100%);
+  border: 1px solid var(--border-gold);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -347,7 +423,7 @@ body {
 .feature-icon svg {
   width: 28px;
   height: 28px;
-  color: #B6509E;
+  color: var(--accent-gold);
 }
 
 /* Partner logos */
@@ -360,4 +436,69 @@ body {
 .partner-logo:hover {
   opacity: 1;
   filter: grayscale(0%);
+}
+
+/* Thai Temple Spire Decoration */
+.spire-decoration {
+  position: relative;
+}
+
+.spire-decoration::before,
+.spire-decoration::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 20px;
+  background: var(--accent-gradient);
+}
+
+.spire-decoration::before {
+  left: -20px;
+  transform: rotate(-15deg);
+}
+
+.spire-decoration::after {
+  right: -20px;
+  transform: rotate(15deg);
+}
+
+/* Gold shimmer effect on hover */
+.gold-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.gold-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 40%,
+    rgba(212, 175, 55, 0.1) 50%,
+    transparent 60%
+  );
+  transform: rotate(45deg);
+  transition: all 0.5s ease;
+  opacity: 0;
+}
+
+.gold-shimmer:hover::after {
+  opacity: 1;
+  animation: shimmer-pass 0.8s forwards;
+}
+
+@keyframes shimmer-pass {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+/* Selection color */
+::selection {
+  background: rgba(212, 175, 55, 0.3);
+  color: white;
 }

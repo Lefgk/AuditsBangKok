@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { Shield, Twitter, Github, Mail, ArrowUpRight } from 'lucide-react'
+import { Twitter, Github, Mail } from 'lucide-react'
+import { TempleIcon } from './TempleIcon'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -26,8 +27,19 @@ export function Footer() {
 
   return (
     <footer id="contact" className="relative pt-24 pb-12 overflow-hidden">
-      <div className="absolute inset-0 bg-[#0A0A0A]" />
+      <div className="absolute inset-0 bg-[#0A0A0B]" />
       <div className="divider absolute top-0 left-0 right-0" />
+
+      {/* Decorative temple silhouettes */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 opacity-[0.02]">
+        <div className="flex justify-around items-end h-full">
+          <TempleIcon className="w-16 h-16" gradient={false} />
+          <TempleIcon className="w-20 h-20" gradient={false} />
+          <TempleIcon className="w-14 h-14" gradient={false} />
+          <TempleIcon className="w-18 h-18" gradient={false} />
+          <TempleIcon className="w-16 h-16" gradient={false} />
+        </div>
+      </div>
 
       <div className="relative z-10 container mx-auto px-6">
         {/* CTA Section */}
@@ -35,7 +47,7 @@ export function Footer() {
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Ready to secure your protocol?
           </h2>
-          <p className="text-[#A1A1AA] text-lg mb-8 max-w-xl mx-auto">
+          <p className="text-[#9CA3AF] text-lg mb-8 max-w-xl mx-auto">
             Get in touch to discuss your security needs. We respond within 24 hours.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -63,13 +75,13 @@ export function Footer() {
           {/* Brand */}
           <div className="md:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-4">
-              <Shield className="w-8 h-8 text-[#B6509E]" />
+              <TempleIcon className="w-9 h-9" />
               <span className="text-xl font-bold">
                 Bangkok<span className="gradient-text">Audits</span>
               </span>
             </Link>
-            <p className="text-[#A1A1AA] text-sm leading-relaxed">
-              Elite Web3 security auditing. Protecting smart contracts from vulnerabilities.
+            <p className="text-[#9CA3AF] text-sm leading-relaxed">
+              Elite Web3 security auditing from Bangkok. Protecting smart contracts from vulnerabilities.
             </p>
           </div>
 
@@ -81,7 +93,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-[#A1A1AA] hover:text-white text-sm transition-colors"
+                    className="text-[#9CA3AF] hover:text-[#D4AF37] text-sm transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -98,7 +110,7 @@ export function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-[#A1A1AA] hover:text-white text-sm transition-colors"
+                    className="text-[#9CA3AF] hover:text-[#D4AF37] text-sm transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -117,7 +129,7 @@ export function Footer() {
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-[#A1A1AA] hover:text-white hover:bg-white/10 transition-all"
+                  className="w-10 h-10 rounded-lg bg-[rgba(212,175,55,0.1)] border border-[rgba(212,175,55,0.2)] flex items-center justify-center text-[#D4AF37] hover:bg-[rgba(212,175,55,0.2)] transition-all"
                 >
                   <link.icon className="w-5 h-5" />
                 </a>
@@ -129,14 +141,14 @@ export function Footer() {
         {/* Bottom */}
         <div className="divider mb-8" />
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[#A1A1AA] text-sm">
+          <p className="text-[#9CA3AF] text-sm">
             © {currentYear} Bangkok Audits. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-[#A1A1AA] hover:text-white transition-colors">
+            <a href="#" className="text-[#9CA3AF] hover:text-[#D4AF37] transition-colors">
               Privacy Policy
             </a>
-            <a href="#" className="text-[#A1A1AA] hover:text-white transition-colors">
+            <a href="#" className="text-[#9CA3AF] hover:text-[#D4AF37] transition-colors">
               Terms of Service
             </a>
           </div>

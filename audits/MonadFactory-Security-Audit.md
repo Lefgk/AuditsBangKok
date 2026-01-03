@@ -1,52 +1,123 @@
-# MonadFactory Protocol Security Audit Report
+# MonadFactory Protocol Security Review
 
-**Auditor:** Bangkok Audits
-**Date:** January 2026
-**Version:** 1.0
-**Commit:** Latest main branch
+## Introduction
+
+A time-boxed security review of the **MonadFactory Protocol** was conducted by **Bangkok Audits**, with a focus on the security aspects of the smart contract implementation.
+
+## Disclaimer
+
+A smart contract security review can never verify the complete absence of vulnerabilities. This is a time, resource and expertise bound effort where we try to find as many vulnerabilities as possible. We can not guarantee 100% security after the review or even if the review will find any problems with your smart contracts. Subsequent security reviews, bug bounty programs and on-chain monitoring are strongly recommended.
+
+## About Bangkok Audits
+
+Bangkok Audits is an independent smart contract security firm specializing in comprehensive protocol reviews. Our team brings deep expertise in DeFi security, having reviewed DEXs, yield farming protocols, gaming contracts, and complex financial systems.
+
+## About MonadFactory Protocol
+
+MonadFactory provides infrastructure for creating DeFi primitives on Monad:
+
+- **Token Factory**: Create ERC20 tokens with built-in tax mechanisms
+- **Farm Factory**: Deploy yield farming contracts for any token pair
+- **Token Vesting**: Customizable vesting schedules with milestones
+- **Staking Vault**: Single-sided staking with rewards
+
+### Privileged Roles & Actors
+
+| Role | Description |
+|------|-------------|
+| Factory Owner | Can withdraw ANY token from ANY deployed farm, modify fees, update configurations |
+| Hardcoded Address | `0xD0D3D4E5c604Bf032412A79f8A178782b54B88b` has same privileges as factory owner |
+| Vault Owner | Can emergency withdraw all tokens, modify reward rates |
+| Vesting Creator | Can revoke vesting schedules, returning unvested tokens |
+| Token Creator | Can enable/disable trading, set fees up to 25%, exclude addresses from fees |
+
+### Observations
+
+- Factory deploys minimal proxy (clone) contracts for gas efficiency
+- Protocol collects fees on farm creation and deposits
+- Token tax system allows flexible fee structures
+- Vesting supports both linear and milestone-based unlocks
 
 ---
 
-## Executive Summary
+## Risk Classification
 
-Bangkok Audits conducted a comprehensive security audit of the MonadFactory Protocol smart contracts. The protocol provides infrastructure for creating tokens with tax mechanisms, deploying yield farms, and managing token vesting schedules.
+|                | High Impact     | Medium Impact  | Low Impact     |
+|----------------|-----------------|----------------|----------------|
+| High Likelihood| Critical        | High           | Medium         |
+| Medium Likelihood| High          | Medium         | Low            |
+| Low Likelihood | Medium          | Low            | Low            |
 
-### Findings Summary
+### Impact
 
-| Severity | Count |
-|----------|-------|
-| Critical | 1 |
-| High | 2 |
-| Medium | 3 |
-| Low | 4 |
-| Informational | 2 |
+- **High**: Leads to significant loss of user funds, protocol insolvency, or complete protocol failure
+- **Medium**: Leads to partial loss of funds, temporary denial of service, or governance manipulation
+- **Low**: Leads to minor issues, inconvenience, or suboptimal behavior
+
+### Likelihood
+
+- **High**: Attack is easy to perform and likely to happen
+- **Medium**: Attack requires specific conditions but is feasible
+- **Low**: Attack requires significant effort, resources, or unlikely conditions
 
 ---
 
-## Scope
+## Security Assessment Summary
 
-The following contracts were audited:
+| Review Details | |
+|----------------|---|
+| **Protocol Name** | MonadFactory Protocol |
+| **Repository** | Private |
+| **Commit** | Latest main branch |
+| **Review Date** | January 2026 |
+| **Methods** | Manual review, static analysis |
 
-- `TokenFactoryTax.sol` - Token Factory with Tax Support
-- `FarmFactory.sol` - Yield Farm Factory
-- `Farm.sol` - Individual Farm Contract
-- `Monad/Vault.sol` - Staking Vault
-- `TokenVesting.sol` - Token Vesting System
-- `Manager.sol` - Protocol Management
-- `PriceOracle.sol` - Price Feed Integration
-- `SmartTrader.sol` - Trading Utilities
+### Scope
+
+| Contract | SLOC |
+|----------|------|
+| `TokenFactoryTax.sol` | ~400 |
+| `FarmFactory.sol` | ~380 |
+| `Monad/Vault.sol` | ~320 |
+| `TokenVesting.sol` | ~420 |
+| `Manager.sol` | ~150 |
+| `PriceOracle.sol` | ~100 |
+| `SmartTrader.sol` | ~200 |
+
+---
+
+## Findings Summary
+
+| ID | Title | Severity | Status |
+|----|-------|----------|--------|
+| [C-01] | Backdoor function allows complete drainage of all farm user funds | Critical | Open |
+| [H-01] | Vault emergency function can drain all user stakes | High | Open |
+| [H-02] | Token factory gives creators excessive control to trap users | High | Open |
+| [M-01] | TokenVesting missing reentrancy protection | Medium | Open |
+| [M-02] | Farm reward calculation suffers from precision loss | Medium | Open |
+| [M-03] | Vault reward pool can become insolvent blocking claims | Medium | Open |
+| [L-01] | Fee-on-transfer tokens cause accounting insolvency | Low | Open |
+| [L-02] | Hardcoded fee receiver address cannot be changed | Low | Open |
+| [L-03] | No maximum duration limit for vesting schedules | Low | Open |
+| [L-04] | Distribution wallet validation missing | Low | Open |
 
 ---
 
 ## Findings
 
-### [C-01] Backdoor Function Allows Complete Fund Drainage
+### [C-01] Backdoor function allows complete drainage of all farm user funds
 
 **Severity:** Critical
+
+**Impact:** High - Factory owner or hardcoded address can drain ALL user staked funds from ANY farm.
+
+**Likelihood:** High - Function exists and is callable at any time with no restrictions.
+
 **Location:** `FarmFactory.sol:240-261` (Farm contract)
 
 **Description:**
-The `safemez` function in the Farm contract allows the factory owner OR a hardcoded address to withdraw ANY token from ANY deployed farm, including all staked user funds:
+
+The `safemez` function in every deployed Farm contract allows the factory owner OR a hardcoded address to withdraw ANY token from ANY deployed farm, including all staked user funds:
 
 ```solidity
 function safemez(
@@ -69,34 +140,62 @@ function safemez(
 }
 ```
 
-**Impact:**
-- Factory owner can drain ALL user staked funds from ANY farm
-- A hardcoded address (0xD0D3D4E5c6604Bf032412A79f8A178782b54B88b) has the same capability
-- This is a complete rug pull vector affecting ALL farms created through this factory
-- Users have no recourse once funds are drained
+This is a **complete rug pull vector** affecting ALL farms created through this factory.
+
+**Attack Scenario:**
+1. Users stake 1,000,000 tokens across multiple farms
+2. Factory owner calls `safemez(stakeToken, 1000000e18, attackerWallet)` on each farm
+3. All user funds are transferred to attacker
+4. Users have lost all funds with no recovery option
 
 **Proof of Concept:**
-1. User stakes 1000 tokens in a farm
-2. Factory owner calls `safemez(stakeToken, 1000, attacker)`
-3. All user funds are transferred to attacker
-4. User has lost all funds with no recovery option
+```solidity
+// Attacker (factory owner) drains all farms
+Farm[] farms = factory.getAllDeployedFarms();
+for (uint i = 0; i < farms.length; i++) {
+    IERC20 stakeToken = farms[i].poolInfo().stakeToken;
+    uint256 balance = stakeToken.balanceOf(address(farms[i]));
+    farms[i].safemez(address(stakeToken), balance, attackerWallet);
+}
+// All user funds now in attacker wallet
+```
 
 **Recommendation:**
-**REMOVE THIS FUNCTION ENTIRELY** or at minimum:
-1. Remove the hardcoded address backdoor
-2. Only allow withdrawal of tokens that exceed staked + reward balances
-3. Add a timelock on any emergency withdrawal
-4. Emit events for transparency
+
+**REMOVE THIS FUNCTION ENTIRELY.** If emergency withdrawal is needed:
+
+```solidity
+function emergencyRecoverToken(address token, uint256 amount) external onlyOwner {
+    // Only allow recovery of tokens that exceed staked + reward balances
+    if (token == address(poolInfo.stakeToken)) {
+        uint256 excess = IERC20(token).balanceOf(address(this)) - totalStaked;
+        require(amount <= excess, "Cannot withdraw staked funds");
+    }
+    if (token == address(poolInfo.rewardToken)) {
+        uint256 excess = IERC20(token).balanceOf(address(this)) - totalPendingRewards;
+        require(amount <= excess, "Cannot withdraw reward funds");
+    }
+
+    emit EmergencyRecovery(token, amount, msg.sender);
+    IERC20(token).safeTransfer(owner(), amount);
+}
+```
 
 ---
 
-### [H-01] Vault Emergency Function Can Drain User Stakes
+### [H-01] Vault emergency function can drain all user stakes
 
 **Severity:** High
+
+**Impact:** High - Owner can withdraw all staked user funds, causing complete loss of deposits.
+
+**Likelihood:** Medium - Requires malicious or compromised owner.
+
 **Location:** `Monad/Vault.sol:308-311`
 
 **Description:**
-Similar to the Lemonad audit, the `emergencyWithdrawToken` function allows owner withdrawal of ANY token including staked user funds:
+
+The `emergencyWithdrawToken` function allows owner withdrawal of ANY token including staked user funds:
 
 ```solidity
 function emergencyWithdrawToken(address _token, uint256 _amount) external onlyOwner {
@@ -105,113 +204,155 @@ function emergencyWithdrawToken(address _token, uint256 _amount) external onlyOw
 }
 ```
 
-**Impact:**
-Owner can withdraw all user staked funds, causing complete loss of deposits.
+No checks prevent withdrawing the stake token or ensure user deposits are protected.
 
 **Recommendation:**
-Add check to prevent withdrawing staked token beyond available rewards:
+
+Add stake protection:
+
 ```solidity
-if (_token == address(token)) {
-    uint256 available = token.balanceOf(address(this)) - totalStaked;
-    require(_amount <= available, "Cannot withdraw staked funds");
+function emergencyWithdrawToken(address _token, uint256 _amount) external onlyOwner {
+    require(_token != address(0), "Invalid token address");
+
+    if (_token == address(token)) {
+        uint256 available = token.balanceOf(address(this)) - totalStaked;
+        require(_amount <= available, "Cannot withdraw staked funds");
+    }
+
+    IERC20(_token).safeTransfer(owner(), _amount);
 }
 ```
 
 ---
 
-### [H-02] TokenTax Centralized Control Over Trading
+### [H-02] Token factory gives creators excessive control to trap users
 
 **Severity:** High
+
+**Impact:** High - Token creators can lock all holder funds and extract maximum value.
+
+**Likelihood:** Medium - Common rug pull pattern.
+
 **Location:** `TokenFactoryTax.sol`
 
 **Description:**
+
 The TokenTax contract gives the factory owner extensive control:
 - Can enable/disable trading at will
 - Can set buy/sell fees up to 25%
 - Can exclude/include addresses from fees
 - Can modify tax wallet
 
-Combined, these allow the owner to:
-1. Disable trading, locking all holder funds
-2. Set maximum fees, extracting 25% on each transaction
-3. Exclude themselves from fees while taxing others
-
-**Impact:**
-Token creators using this factory have complete control to manipulate trading and extract value from holders.
+Combined attack:
+1. Creator launches token, users buy in
+2. Creator disables trading - all users trapped
+3. Creator excludes self from fees
+4. Creator sells entire supply while others cannot
+5. Alternatively: set 25% fees, extract value on every trade
 
 **Recommendation:**
-- Add maximum fee caps that cannot be changed
-- Add timelock on trading disable
-- Consider making fee changes require community approval
-- Document these risks clearly for token buyers
+
+- Add immutable maximum fee cap (e.g., 10%)
+- Add timelock on trading disable (e.g., 24 hours warning)
+- Make fee changes require time delay
+- Document risks clearly for token buyers
 
 ---
 
-### [M-01] TokenVesting Missing Reentrancy Protection
+### [M-01] TokenVesting missing reentrancy protection
 
 **Severity:** Medium
+
+**Impact:** Medium - Malicious token could exploit reentrancy to claim more than entitled.
+
+**Likelihood:** Low - Requires malicious token with callbacks.
+
 **Location:** `TokenVesting.sol:235, 255`
 
 **Description:**
-The `claim` and `transferVesting` functions make external calls to transfer tokens but lack ReentrancyGuard protection:
+
+The `claim` and `transferVesting` functions make external calls to transfer tokens but lack ReentrancyGuard:
 
 ```solidity
 function claim(uint256 roundId) external {
     // ... state changes ...
     IERC20(schedule.token).transfer(msg.sender, claimable);
-    // No reentrancy protection
+    // External call after state changes - follows CEI but no guard
 }
 ```
 
-**Impact:**
-If a malicious token with callbacks is used, reentrancy attacks could allow claiming more than entitled or corrupting vesting state.
+If a malicious token with transfer callbacks is used, reentrancy could corrupt vesting state.
 
 **Recommendation:**
-Add ReentrancyGuard and use the checks-effects-interactions pattern:
+
+Add ReentrancyGuard:
+
 ```solidity
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-function claim(uint256 roundId) external nonReentrant {
-    // ...
+contract TokenVesting is ReentrancyGuard {
+    function claim(uint256 roundId) external nonReentrant {
+        // ...
+    }
+
+    function transferVesting(uint256 roundId, address newBeneficiary) external nonReentrant {
+        // ...
+    }
 }
 ```
 
 ---
 
-### [M-02] Farm Reward Calculation Precision Loss
+### [M-02] Farm reward calculation suffers from precision loss
 
 **Severity:** Medium
+
+**Impact:** Medium - Users receive fewer rewards than expected.
+
+**Likelihood:** Medium - Occurs with small rewards or long durations.
+
 **Location:** `FarmFactory.sol:61`
 
 **Description:**
-The reward per second calculation in Farm constructor divides before use:
+
+Reward per second divides before storing:
 
 ```solidity
 poolInfo.rewardPerSecond = _rewardAmount / _duration;
 ```
 
-For small reward amounts or long durations, this could result in 0 rewards per second or significant precision loss.
-
-**Impact:**
-Users may receive fewer rewards than expected due to rounding errors in reward calculation.
+For 1000 tokens over 1 year (31,536,000 seconds):
+- Expected: ~0.0000317 tokens/second
+- Actual: 0 (if token has 18 decimals and amount < duration)
 
 **Recommendation:**
-Use higher precision multiplier:
+
+Use precision multiplier:
+
 ```solidity
 uint256 private constant REWARD_PRECISION = 1e18;
+
 poolInfo.rewardPerSecond = (_rewardAmount * REWARD_PRECISION) / _duration;
-// Later when calculating: reward = (rewardPerSecond * time) / REWARD_PRECISION
+
+// When calculating rewards:
+uint256 reward = (rewardPerSecond * timeElapsed) / REWARD_PRECISION;
 ```
 
 ---
 
-### [M-03] Vault Reward Pool Can Become Insolvent
+### [M-03] Vault reward pool can become insolvent blocking claims
 
 **Severity:** Medium
+
+**Impact:** High - Users cannot claim earned rewards.
+
+**Likelihood:** Low - Requires reward pool depletion.
+
 **Location:** `Monad/Vault.sol:148`
 
 **Description:**
-The reward calculation is based on `totalRewardsAvailable`, but if this value is lower than accumulated user rewards, claims will fail:
+
+Claims revert if rewards exceed available balance:
 
 ```solidity
 require(totalRewardsAvailable >= rewards, "Insufficient vault rewards");
@@ -219,36 +360,36 @@ require(totalRewardsAvailable >= rewards, "Insufficient vault rewards");
 
 The reward rate continues accumulating regardless of actual available rewards.
 
-**Impact:**
-Users may be promised rewards they cannot claim, leading to locked funds and failed transactions.
-
 **Recommendation:**
-Either:
-1. Cap rewards based on available pool
-2. Allow partial claims
-3. Automatically pause reward accrual when pool is low
+
+Allow partial claims or pause accrual when low:
+
+```solidity
+uint256 claimable = rewards > totalRewardsAvailable ? totalRewardsAvailable : rewards;
+require(claimable > 0, "Nothing to claim");
+```
 
 ---
 
-### [L-01] Fee-on-Transfer Tokens Not Handled in Farm
+### [L-01] Fee-on-transfer tokens cause accounting insolvency
 
 **Severity:** Low
+
 **Location:** `FarmFactory.sol:123`
 
 **Description:**
-When depositing tokens that have transfer fees, the actual received amount is less than the input amount, but the contract credits the full amount:
+
+When depositing fee-on-transfer tokens, actual received amount is less than input:
 
 ```solidity
 poolInfo.stakeToken.safeTransferFrom(msg.sender, address(this), _amount);
-// ...
-user.amount += depositAmount;  // Uses input amount, not actual received
+user.amount += depositAmount;  // Uses input, not received amount
 ```
 
-**Impact:**
-For fee-on-transfer tokens, the contract will become insolvent as it tracks more tokens than it holds.
-
 **Recommendation:**
-Check balance before and after transfer:
+
+Check balance difference:
+
 ```solidity
 uint256 balanceBefore = poolInfo.stakeToken.balanceOf(address(this));
 poolInfo.stakeToken.safeTransferFrom(msg.sender, address(this), _amount);
@@ -258,146 +399,104 @@ user.amount += received;
 
 ---
 
-### [L-02] Hardcoded Fee Receiver Address
+### [L-02] Hardcoded fee receiver address cannot be changed
 
 **Severity:** Low
+
 **Location:** `FarmFactory.sol:34`
 
 **Description:**
-The fee receiver in Farm contract is hardcoded:
 
 ```solidity
 address public feeReceiver = 0xD0D3D4E5c6604Bf032412A79f8A178782b54B88b;
 ```
 
-**Impact:**
-Cannot change fee receiver if needed (e.g., compromised key, business changes).
+Cannot be updated if key is compromised or business needs change.
 
 **Recommendation:**
-Make it configurable by owner or pass as constructor parameter.
+
+Make configurable via owner function.
 
 ---
 
-### [L-03] No Maximum Duration Limit for Vesting
+### [L-03] No maximum duration limit for vesting schedules
 
 **Severity:** Low
+
 **Location:** `TokenVesting.sol`
 
 **Description:**
-There's no maximum limit on vesting duration, allowing extremely long or potentially problematic schedules.
 
-**Impact:**
-Could create schedules that are impractical or have timestamp overflow issues in distant future.
+Extremely long vesting durations could cause timestamp issues or be impractical.
 
 **Recommendation:**
-Add reasonable maximum duration (e.g., 10 years).
+
+Add reasonable maximum (e.g., 10 years):
+
+```solidity
+require(_duration <= 10 * 365 days, "Duration too long");
+```
 
 ---
 
-### [L-04] Distribution Wallet Validation Missing
+### [L-04] Distribution wallet validation missing
 
 **Severity:** Low
+
 **Location:** `FarmFactory.sol:354-368`
 
 **Description:**
-The `_distributeFees` function doesn't validate that wallet addresses are non-zero before transfer:
 
-```solidity
-if (share > 0 && wallet.wallet != address(0)) {
-    payable(wallet.wallet).transfer(share);
-```
-
-While this check exists, a zero address in the array would silently fail.
-
-**Impact:**
-Fees could be lost if a zero address is accidentally added to distribution wallets.
+Zero addresses in distribution array would silently fail transfers.
 
 **Recommendation:**
+
 Validate addresses when setting distribution wallets.
 
 ---
 
+## Informational Findings
+
 ### [I-01] Event Emission Best Practices
 
-**Severity:** Informational
-**Location:** Multiple files
-
-**Description:**
-Some state-changing functions don't emit events, making off-chain tracking difficult.
-
-**Recommendation:**
-Add events for all significant state changes, especially in admin functions.
-
----
+Some admin functions don't emit events, making off-chain tracking difficult.
 
 ### [I-02] Missing NatSpec Documentation
 
-**Severity:** Informational
-**Location:** Multiple files
-
-**Description:**
-Many functions lack NatSpec documentation explaining their purpose, parameters, and return values.
-
-**Recommendation:**
-Add comprehensive NatSpec comments for better code maintainability and user understanding.
+Many functions lack documentation for parameters and return values.
 
 ---
 
 ## Security Patterns Observed
 
-### Positive Findings
-
-1. **Solidity 0.8.x** - All contracts use Solidity ^0.8.19+ with overflow protection
-2. **SafeERC20** - Used in most token operations
-3. **Access Control** - Ownable pattern implemented
-4. **Fee Caps** - Maximum fees are capped (e.g., 10% for deposit/withdraw)
+### Positive
+- Solidity ^0.8.19+ with overflow protection
+- SafeERC20 used in most operations
+- Access control via Ownable pattern
+- Fee caps implemented (10% for deposit/withdraw)
 
 ### Critical Concerns
-
-1. **Backdoor Functions** - The `safemez` function is a critical security flaw
-2. **Centralization Risks** - Owner has excessive control
-3. **Missing Reentrancy Guards** - TokenVesting lacks protection
-4. **Hardcoded Addresses** - Creates inflexibility and potential backdoors
-
----
-
-## Recommendations
-
-### Immediate Actions Required
-
-1. **REMOVE `safemez` function** - This is a critical rug pull vector
-2. **Add ReentrancyGuard to TokenVesting** - Prevents reentrancy attacks
-3. **Restrict emergency withdrawal functions** - Prevent draining user funds
-
-### Best Practices
-
-1. **Implement Timelock** - Add delays on sensitive admin functions
-2. **Multi-sig Ownership** - Require multiple signatures for critical operations
-3. **Audit Events** - Add comprehensive event logging
-4. **Documentation** - Create user-facing documentation about risks
+- **The `safemez` function is a critical rug pull backdoor**
+- Hardcoded address has owner-level privileges
+- Emergency functions lack stake protection
+- Token factory enables common rug patterns
 
 ---
 
 ## Conclusion
 
-The MonadFactory Protocol has **critical security issues** that must be addressed before production use:
+The MonadFactory Protocol has **CRITICAL security issues** that **MUST** be addressed before any production use:
 
-1. **Critical: The `safemez` backdoor allows complete drainage of all farms**
-2. **High: Emergency functions can drain user funds**
-3. **High: TokenTax gives excessive control to creators**
+1. **CRITICAL**: The `safemez` backdoor allows complete drainage of ALL user funds from ALL farms
+2. **HIGH**: Emergency functions in Vault can drain user stakes
+3. **HIGH**: Token factory enables rug pull patterns
 
-The protocol demonstrates some good practices (Solidity 0.8.x, SafeERC20) but the centralization risks and backdoor functions present significant danger to users.
+The hardcoded address `0xD0D3D4E5c6604Bf032412A79f8A178782b54B88b` having the same privileges as the factory owner is an unacceptable backdoor that must be removed.
 
-**We strongly recommend against using this protocol until the critical and high severity findings are resolved.**
+**We STRONGLY RECOMMEND against using this protocol until the critical and high severity findings are resolved.**
 
-**Overall Risk Assessment: Critical**
-
----
-
-## Disclaimer
-
-This audit report is not financial advice. Smart contract security is an evolving field, and new vulnerabilities may be discovered after this audit. Users should do their own research before interacting with any smart contract.
+**Overall Risk Assessment: CRITICAL**
 
 ---
 
-*This audit report was generated by Bangkok Audits. For questions or clarifications, please contact our team.*
+*This security review was conducted by Bangkok Audits. For questions or clarifications, contact our team.*

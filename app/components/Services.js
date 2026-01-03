@@ -1,6 +1,6 @@
 'use client'
 
-import { Code, Search, Shield, FileCheck, Bug, Cpu, Zap, Lock } from 'lucide-react'
+import { Code, Search, Bug, Cpu, FileCheck, Lock } from 'lucide-react'
 
 const services = [
   {
@@ -38,11 +38,14 @@ const services = [
 export function Services() {
   return (
     <section id="services" className="section relative overflow-hidden">
-      <div className="absolute inset-0 bg-[#0A0A0A]" />
+      <div className="absolute inset-0 bg-[#0A0A0B]" />
+
+      {/* Gold glow */}
+      <div className="glow-gold -bottom-48 -right-48 opacity-30" />
 
       <div className="relative z-10 container mx-auto px-6">
         {/* Section Header */}
-        <div className="section-header">
+        <div className="section-header thai-border pt-8">
           <p className="section-label">What We Do</p>
           <h2 className="section-title">
             Security <span className="gradient-text">Services</span>
@@ -55,7 +58,7 @@ export function Services() {
         {/* Services Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {services.map((service, index) => (
-            <div key={index} className="card p-8 group">
+            <div key={index} className="card p-8 group gold-shimmer">
               {/* Icon */}
               <div className="feature-icon mb-6 group-hover:scale-110 transition-transform">
                 <service.icon />
@@ -65,7 +68,7 @@ export function Services() {
               <h3 className="text-xl font-semibold text-white mb-3">
                 {service.title}
               </h3>
-              <p className="text-[#A1A1AA] leading-relaxed">
+              <p className="text-[#9CA3AF] leading-relaxed">
                 {service.description}
               </p>
             </div>
