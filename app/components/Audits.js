@@ -13,15 +13,22 @@ const GITHUB_CONFIG = {
 
 // Manually add audits with metadata here
 const MANUAL_AUDITS = [
-  // Example - uncomment when you have audits:
-  // {
-  //   name: 'Protocol XYZ Security Audit',
-  //   date: '2024-01-15',
-  //   client: 'Protocol XYZ',
-  //   findings: { critical: 0, high: 2, medium: 5, low: 8, info: 3 },
-  //   pdfUrl: 'https://raw.githubusercontent.com/lefgiak/AuditsBangKok/main/audits/protocol-xyz.pdf',
-  //   description: 'Complete security audit of Protocol XYZ DeFi smart contracts.',
-  // },
+  {
+    name: 'Lemonad Protocol Security Audit',
+    date: 'January 2026',
+    client: 'Lemonad',
+    findings: { critical: 0, high: 1, medium: 4, low: 5, info: 3 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/AuditsBangKok/main/audits/Lemonad-Security-Audit.md',
+    description: 'Comprehensive audit of DEX, gaming contracts, yield farming, and treasury management.',
+  },
+  {
+    name: 'MonadFactory Protocol Security Audit',
+    date: 'January 2026',
+    client: 'MonadFactory',
+    findings: { critical: 1, high: 2, medium: 3, low: 4, info: 2 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/AuditsBangKok/main/audits/MonadFactory-Security-Audit.md',
+    description: 'Security audit of token factory, farm factory, vesting, and vault contracts.',
+  },
 ]
 
 export function Audits() {
