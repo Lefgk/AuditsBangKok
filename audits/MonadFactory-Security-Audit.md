@@ -68,9 +68,29 @@ MonadFactory provides infrastructure for creating DeFi primitives on Monad:
 |----------------|---|
 | **Protocol Name** | MonadFactory Protocol |
 | **Repository** | Private |
-| **Commit** | Latest main branch |
+| **Commit** | `455546082bbdfba421f9b20cc0d5396c4c007100` |
 | **Review Date** | January 2026 |
 | **Methods** | Manual review, static analysis |
+| **Network** | Monad Mainnet (Chain ID: 143) |
+
+### Deployed Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| TokenFactoryTax | `0xA7983D5021188d6aa77200D61c248d84603fb8F3` |
+| FarmFactory | `0x2C3397b98AA90A6744cb48295804F499Dd0cf6ac` |
+| Vault | `0x749F5fB1Ea41D53B82604975fd82A22538DaB65a` |
+| TokenVesting | `0x65667f8EDF885e4ED7baB770338CbA38558BBaF5` |
+| SmartTrader | `0x0EA43DeD5ebe9978E78D2DCeE842f54ec5e39d09` |
+
+### Project Links
+
+| Platform | Link |
+|----------|------|
+| Website | [monadgrid.com](https://monadgrid.com) |
+| Twitter | [@MonadLaunchgrid](https://x.com/MonadLaunchgrid) |
+| Discord | [Join Discord](https://discord.gg/AhYKdnCr) |
+| Docs | [GitBook](https://monadgrid.gitbook.io/monadgrid) |
 
 ### Scope
 
@@ -78,10 +98,8 @@ MonadFactory provides infrastructure for creating DeFi primitives on Monad:
 |----------|------|
 | `TokenFactoryTax.sol` | ~400 |
 | `FarmFactory.sol` | ~380 |
-| `Monad/Vault.sol` | ~320 |
+| `Vault.sol` | ~320 |
 | `TokenVesting.sol` | ~420 |
-| `Manager.sol` | ~150 |
-| `PriceOracle.sol` | ~100 |
 | `SmartTrader.sol` | ~200 |
 
 ---

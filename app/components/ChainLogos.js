@@ -62,3 +62,61 @@ export function EthereumLogo({ className = "w-5 h-5" }) {
     </svg>
   )
 }
+
+// PulseChain Logo
+export function PulseChainLogo({ className = "w-5 h-5" }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="16" cy="16" r="14" fill="#00FF00" />
+      <path
+        d="M10 16L14 12L16 14L18 10L22 16L18 20L16 18L14 22L10 16Z"
+        fill="white"
+      />
+    </svg>
+  )
+}
+
+// Avalanche Logo
+export function AvalancheLogo({ className = "w-5 h-5" }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="16" cy="16" r="14" fill="#E84142" />
+      <path
+        d="M16 8L22 20H10L16 8Z"
+        fill="white"
+      />
+      <path
+        d="M11 20L14 15H8L11 20Z"
+        fill="white"
+      />
+    </svg>
+  )
+}
+
+// BNB Chain Logo
+export function BNBChainLogo({ className = "w-5 h-5" }) {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="16" cy="16" r="14" fill="#F3BA2F" />
+      <path
+        d="M16 8L20 12L17.5 14.5L20 17L16 21L12 17L14.5 14.5L12 12L16 8Z"
+        fill="white"
+      />
+    </svg>
+  )
+}

@@ -1,8 +1,8 @@
-# Lemonad Protocol Security Review
+# Lemonad Core Security Review
 
 ## Introduction
 
-A time-boxed security review of the **Lemonad Protocol** was conducted by **Stonewall**, with a focus on the security aspects of the smart contract implementation.
+A time-boxed security review of the **Lemonad Core** contracts was conducted by **Stonewall**, with a focus on the security aspects of the smart contract implementation.
 
 ## Disclaimer
 
@@ -12,30 +12,28 @@ A smart contract security review can never verify the complete absence of vulner
 
 Stonewall is an independent smart contract security firm delivering immovable protection for Web3 protocols. Our team brings deep expertise in DeFi security, having reviewed DEXs, yield farming protocols, gaming contracts, and complex financial systems.
 
-## About Lemonad Protocol
+## About Lemonad Core
 
-Lemonad is a comprehensive DeFi ecosystem built on Monad, consisting of:
+Lemonad Core consists of the foundational token and yield infrastructure:
 
-- **DEX (Uniswap V2 Fork)**: LemonRouter, LemonPair, LemonFactory for decentralized token swaps
-- **Gaming Suite**: Dice, Lottery, Prediction Markets, PvP Battles, Racing games
-- **Yield Farming**: MasterChef-style farming with LEMON token rewards
-- **Treasury Management**: Centralized fee collection and distribution
+- **LeMonad Token**: The native ERC20 token of the ecosystem
+- **Yield Farming**: MasterChef-style farming with LEMON token rewards (LemonChef)
+- **YieldBoostVault**: Single-sided staking vault with NFT boost mechanics
+- **Treasury**: Centralized fee collection and distribution from all protocol activities
 
 ### Privileged Roles & Actors
 
 | Role | Description |
 |------|-------------|
-| Owner | Can modify game parameters, pause games, withdraw emergency funds, update fees |
-| Treasury | Receives house fees from all games and DEX operations |
-| EntropyManager | Centralized VRF provider for randomness in games |
-| GameRegistry | Controls which games are active and can modify configurations |
+| Owner | Can modify vault parameters, emergency withdraw, update fees and tax rates |
+| Treasury Owner | Controls fee distribution and token recovery |
 
 ### Observations
 
-- Protocol uses Pyth Network for price feeds in prediction markets
-- Games utilize commit-reveal pattern with VRF for fair randomness
-- DEX follows standard Uniswap V2 patterns with custom fee collection
-- NFT integration for game participation and yield boosting
+- LemonChef follows standard MasterChef patterns
+- YieldBoostVault implements time-based tax decay mechanism
+- Treasury aggregates fees from DEX and gaming operations
+- NFT integration for yield boosting
 
 ---
 
@@ -65,31 +63,40 @@ Lemonad is a comprehensive DeFi ecosystem built on Monad, consisting of:
 
 | Review Details | |
 |----------------|---|
-| **Protocol Name** | Lemonad Protocol |
+| **Protocol Name** | Lemonad Core |
 | **Repository** | Private |
-| **Commit** | Latest main branch |
+| **Commit** | `4bcdafa9703e197329cbc0cff193a50457decc6c` |
 | **Review Date** | January 2026 |
 | **Methods** | Manual review, static analysis |
+| **Network** | Monad Mainnet (Chain ID: 143) |
+
+### Deployed Contract Addresses
+
+| Contract | Address |
+|----------|---------|
+| LeMonad Token | `0xfB5D8892297Bf47F33C5dA9B320F9D74c61955F7` |
+| YieldBoostVault | `0x749F5fB1Ea41D53B82604975fd82A22538DaB65a` |
+| LemonChef | `0x09C0B23c904ec03bFbf8B20686b4a42add71ad6a` |
+| Treasury | `0xb64fE5E3650EBC5CD3f4816F1dcD4ce4cB52Eb3a` |
+
+### Project Links
+
+| Platform | Link |
+|----------|------|
+| Website | [lemonad.one](https://lemonad.one) |
+| Twitter | [@LeMONAD_Factory](https://x.com/LeMONAD_Factory) |
+| Telegram | [LeMONAD_Factory](https://t.me/LeMONAD_Factory) |
+| Discord | [Join Discord](https://discord.gg/BvKgwVpvdk) |
+| Docs | [GitBook](https://lemonad.gitbook.io/lemonad-docs) |
 
 ### Scope
 
 | Contract | SLOC |
 |----------|------|
 | `LeMonad.sol` | ~50 |
-| `dex/LemonRouter.sol` | ~200 |
-| `dex/LemonPair.sol` | ~300 |
-| `dex/LemonFactory.sol` | ~100 |
-| `dex/FeeCollector.sol` | ~80 |
-| `dex/WMON.sol` | ~50 |
 | `farming/LemonChef.sol` | ~250 |
-| `games/LemonDice.sol` | ~200 |
-| `games/LemonLotto.sol` | ~250 |
-| `games/LemonPredict.sol` | ~350 |
-| `games/LemonBattles.sol` | ~370 |
-| `games/SqueezeRacing.sol` | ~400 |
-| `games/Treasury.sol` | ~150 |
 | `games/YieldBoostVault.sol` | ~320 |
-| `games/EntropyManager.sol` | ~100 |
+| `games/Treasury.sol` | ~150 |
 
 ---
 
@@ -98,15 +105,10 @@ Lemonad is a comprehensive DeFi ecosystem built on Monad, consisting of:
 | ID | Title | Severity | Status |
 |----|-------|----------|--------|
 | [H-01] | Emergency withdrawal allows owner to drain all user staked funds | High | Open |
-| [M-01] | Stale oracle price can resolve prediction markets incorrectly | Medium | Open |
-| [M-02] | Treasury lacks recovery mechanism for accidentally sent tokens | Medium | Open |
-| [M-03] | Vault reward calculation can permanently block user claims | Medium | Open |
-| [M-04] | Emergency refund logic creates confusing user experience | Medium | Open |
-| [L-01] | Unbounded loop in matchmaking can cause DoS | Low | Open |
-| [L-02] | Active races array iteration may become expensive | Low | Open |
-| [L-03] | LemonChef allows duplicate pool creation | Low | Open |
-| [L-04] | Tax rate can be set to 100% allowing seizure of all withdrawals | Low | Open |
-| [L-05] | Multiple unbounded arrays never cleaned up | Low | Open |
+| [M-01] | Treasury lacks recovery mechanism for accidentally sent tokens | Medium | Open |
+| [M-02] | Vault reward calculation can permanently block user claims | Medium | Open |
+| [L-01] | LemonChef allows duplicate pool creation | Low | Open |
+| [L-02] | Tax rate can be set to 100% allowing seizure of all withdrawals | Low | Open |
 
 ---
 
@@ -160,44 +162,7 @@ function emergencyWithdrawToken(address _token, uint256 _amount) external onlyOw
 
 ---
 
-### [M-01] Stale oracle price can resolve prediction markets incorrectly
-
-**Severity:** Medium
-
-**Impact:** High - Markets could be resolved with outdated prices, causing incorrect outcomes and financial losses.
-
-**Likelihood:** Low - Requires oracle to return stale data, which is uncommon but possible.
-
-**Location:** `games/LemonPredict.sol:157`
-
-**Description:**
-
-The contract uses `pyth.getPriceUnsafe()` which returns price data without validating freshness:
-
-```solidity
-IPyth.Price memory priceData = pyth.getPriceUnsafe(market.priceId);
-```
-
-During periods of high volatility or network congestion, the price data could be significantly outdated, leading to incorrect market resolution.
-
-**Attack Scenario:**
-1. Market closes at timestamp T
-2. Price at T is $100, but cached oracle price is from T-1 hour showing $95
-3. Users who bet "under $97" win incorrectly
-4. Legitimate winners based on actual price lose funds
-
-**Recommendation:**
-
-Use `pyth.getPrice()` which validates freshness, or add explicit staleness check:
-
-```solidity
-IPyth.Price memory priceData = pyth.getPriceUnsafe(market.priceId);
-require(block.timestamp - priceData.publishTime < MAX_PRICE_AGE, "Stale price");
-```
-
----
-
-### [M-02] Treasury lacks recovery mechanism for accidentally sent tokens
+### [M-01] Treasury lacks recovery mechanism for accidentally sent tokens
 
 **Severity:** Medium
 
@@ -224,7 +189,7 @@ function rescueToken(address _token, uint256 _amount) external onlyOwner {
 
 ---
 
-### [M-03] Vault reward calculation can permanently block user claims
+### [M-02] Vault reward calculation can permanently block user claims
 
 **Severity:** Medium
 
@@ -255,81 +220,7 @@ require(claimableAmount > 0, "Nothing to claim");
 
 ---
 
-### [M-04] Emergency refund logic creates confusing user experience
-
-**Severity:** Medium
-
-**Impact:** Low - Poor user experience and failed transactions.
-
-**Likelihood:** Medium - Occurs whenever emergency refund is triggered.
-
-**Location:** `games/LemonPredict.sol:323-333`
-
-**Description:**
-
-When `emergencyRefund` is called, it sets `finalPrice = 0`. However, `claimWinnings` doesn't check for this condition, so users attempt to claim winnings (which fails) before realizing they need to call `claimRefund` instead.
-
-**Recommendation:**
-
-Add a check in `claimWinnings`:
-
-```solidity
-function claimWinnings(uint256 marketId) external {
-    Market storage market = markets[marketId];
-    require(market.resolved, "Market not resolved");
-    require(market.finalPrice != 0, "Market was refunded - use claimRefund");
-    // ...
-}
-```
-
----
-
-### [L-01] Unbounded loop in matchmaking can cause DoS
-
-**Severity:** Low
-
-**Location:** `games/LemonBattles.sol:197-210`
-
-**Description:**
-
-The `_tryMatchmaking` function iterates through all pending entries:
-
-```solidity
-for (uint256 i = 0; i < pendingEntryIds.length; i++) {
-    // ...
-}
-```
-
-If the pending queue grows large, gas costs become prohibitively expensive.
-
-**Recommendation:**
-
-Add maximum iteration limit:
-
-```solidity
-uint256 maxIterations = pendingEntryIds.length > 100 ? 100 : pendingEntryIds.length;
-for (uint256 i = 0; i < maxIterations; i++) {
-```
-
----
-
-### [L-02] Active races array iteration may become expensive
-
-**Severity:** Low
-
-**Location:** `games/SqueezeRacing.sol - _removeFromActive()`
-
-**Description:**
-
-Removing races iterates through the active array. With many concurrent races, this becomes expensive.
-
-**Recommendation:**
-
-Consider limiting maximum concurrent races or using more efficient data structures.
-
----
-
-### [L-03] LemonChef allows duplicate pool creation
+### [L-01] LemonChef allows duplicate pool creation
 
 **Severity:** Low
 
@@ -355,7 +246,7 @@ function add(...) external onlyOwner {
 
 ---
 
-### [L-04] Tax rate can be set to 100% allowing seizure of all withdrawals
+### [L-02] Tax rate can be set to 100% allowing seizure of all withdrawals
 
 **Severity:** Low
 
@@ -375,35 +266,11 @@ require(_taxRate <= 5000, "Tax rate too high");
 
 ---
 
-### [L-05] Multiple unbounded arrays never cleaned up
-
-**Severity:** Low
-
-**Location:** Multiple files
-
-**Description:**
-
-Arrays tracking battles, entries, and races grow indefinitely without cleanup, increasing gas costs over time.
-
-**Recommendation:**
-
-Implement periodic cleanup or use mappings with separate counters.
-
----
-
 ## Informational Findings
 
-### [I-01] Centralized VRF Management
-
-The EntropyManager creates a single point of failure for randomness. Consider documenting trust assumptions and planning migration to decentralized VRF.
-
-### [I-02] High Daily Reward Rate Cap
+### [I-01] High Daily Reward Rate Cap
 
 Maximum 10% daily reward rate could deplete rewards rapidly. Consider lower default caps.
-
-### [I-03] DEX Follows Standard Patterns
-
-Positive finding: DEX contracts closely follow well-audited Uniswap V2 implementation.
 
 ---
 
@@ -413,23 +280,22 @@ Positive finding: DEX contracts closely follow well-audited Uniswap V2 implement
 - Solidity ^0.8.20+ with overflow protection
 - ReentrancyGuard on state-changing functions
 - SafeERC20 for token transfers
-- Proper VRF implementation for randomness
-- Commit-reveal pattern in games
+- Standard MasterChef patterns in LemonChef
 
 ### Concerns
 - Significant owner control over funds
 - Emergency functions too powerful
-- Oracle dependency for predictions
+- No maximum cap on tax rates
 
 ---
 
 ## Conclusion
 
-The Lemonad Protocol demonstrates solid security practices with proper use of Solidity 0.8.x, reentrancy guards, and VRF randomness. The main concerns are centralization risks in emergency withdrawal functions that could allow complete drainage of user funds.
+The Lemonad Core contracts follow established patterns but have significant centralization risks. The main concern is the emergency withdrawal function that could allow complete drainage of user funds.
 
 **We recommend addressing the High severity finding before deployment.**
 
-**Overall Risk Assessment: Medium**
+**Overall Risk Assessment: Medium-High**
 
 ---
 

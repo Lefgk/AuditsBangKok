@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { FileText, ExternalLink, Download, Calendar, X } from 'lucide-react'
 import { StonewallLogo } from './StonewallLogo'
-import { MonadLogo } from './ChainLogos'
+import { MonadLogo, PulseChainLogo, AvalancheLogo, BNBChainLogo } from './ChainLogos'
 
 // Configure your GitHub repo here
 const GITHUB_CONFIG = {
@@ -15,15 +15,48 @@ const GITHUB_CONFIG = {
 
 // Manually add audits with metadata here
 const MANUAL_AUDITS = [
+  // Lemonad Ecosystem (Monad)
   {
-    name: 'Lemonad Protocol Security Review',
+    name: 'Lemonad Core Security Review',
     date: 'January 2026',
     client: 'Lemonad',
     chain: { name: 'Monad', logo: MonadLogo, color: '#836EF9' },
-    findings: { critical: 0, high: 1, medium: 4, low: 5, info: 3 },
-    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/Lemonad-Security-Audit.md',
-    description: 'Comprehensive review of DEX, gaming contracts, yield farming, and treasury management on Monad.',
+    findings: { critical: 0, high: 0, medium: 2, low: 2, info: 1 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/Lemonad-Core-Security-Audit.md',
+    description: 'Token, yield farming (LemonChef), YieldBoostVault, and treasury management.',
+    socials: { twitter: 'https://x.com/LeMONAD_Factory', telegram: 'https://t.me/LeMONAD_Factory' },
   },
+  {
+    name: 'Lemonad DEX Security Review',
+    date: 'January 2026',
+    client: 'Lemonad',
+    chain: { name: 'Monad', logo: MonadLogo, color: '#836EF9' },
+    findings: { critical: 0, high: 0, medium: 1, low: 2, info: 2 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/Lemonad-DEX-Security-Audit.md',
+    description: 'Uniswap V2 fork: Factory, Router, Pair, FeeCollector, and WMON contracts.',
+    socials: { twitter: 'https://x.com/LeMONAD_Factory', telegram: 'https://t.me/LeMONAD_Factory' },
+  },
+  {
+    name: 'Lemonad Gaming Suite Security Review',
+    date: 'January 2026',
+    client: 'Lemonad',
+    chain: { name: 'Monad', logo: MonadLogo, color: '#836EF9' },
+    findings: { critical: 0, high: 0, medium: 2, low: 3, info: 3 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/Lemonad-Gaming-Security-Audit.md',
+    description: 'On-chain gaming: Dice, Lotto, Battles, Racing, Predictions with Pyth VRF.',
+    socials: { twitter: 'https://x.com/LeMONAD_Factory', telegram: 'https://t.me/LeMONAD_Factory' },
+  },
+  {
+    name: 'iLemonati NFT Security Review',
+    date: 'January 2026',
+    client: 'Lemonad',
+    chain: { name: 'Monad', logo: MonadLogo, color: '#836EF9' },
+    findings: { critical: 0, high: 0, medium: 1, low: 3, info: 2 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/iLemonati-Security-Audit.md',
+    description: 'NFT minting contract with OG/WL/public phases and tiered pricing.',
+    socials: { twitter: 'https://x.com/LeMONAD_Factory', telegram: 'https://t.me/LeMONAD_Factory' },
+  },
+  // MonadFactory (Monad)
   {
     name: 'MonadFactory Protocol Security Review',
     date: 'January 2026',
@@ -31,7 +64,51 @@ const MANUAL_AUDITS = [
     chain: { name: 'Monad', logo: MonadLogo, color: '#836EF9' },
     findings: { critical: 1, high: 2, medium: 3, low: 4, info: 2 },
     pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/MonadFactory-Security-Audit.md',
-    description: 'Security review of token factory, farm factory, vesting, and vault contracts with critical findings.',
+    description: 'Token factory, farm factory, vesting, and vault contracts with critical findings.',
+    socials: { twitter: 'https://x.com/MonadLaunchgrid', discord: 'https://discord.gg/AhYKdnCr' },
+  },
+  // PulseFun (PulseChain)
+  {
+    name: 'PulseFun Betting Security Review',
+    date: 'January 2026',
+    client: 'PulseFun',
+    chain: { name: 'PulseChain', logo: PulseChainLogo, color: '#00FF00' },
+    findings: { critical: 0, high: 0, medium: 3, low: 3, info: 0 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/PulseFun-Betting-Security-Audit.md',
+    description: 'Prediction markets with price bets, custom bets, and PoolV3 yield integration.',
+    socials: { twitter: 'https://x.com/nexionpulse', telegram: 'https://t.me/NexionPulse' },
+  },
+  {
+    name: 'PulseFun NEON Security Review',
+    date: 'January 2026',
+    client: 'PulseFun',
+    chain: { name: 'PulseChain', logo: PulseChainLogo, color: '#00FF00' },
+    findings: { critical: 0, high: 1, medium: 2, low: 3, info: 0 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/PulseFun-NEON-Security-Audit.md',
+    description: 'Deflationary NEON token with staking, auctions, vault, and buy-n-burn.',
+    socials: { twitter: 'https://x.com/nexionpulse', telegram: 'https://t.me/NexionPulse' },
+  },
+  // StackFi (Avalanche)
+  {
+    name: 'StackFi Avax Security Review',
+    date: 'January 2026',
+    client: 'StackFi',
+    chain: { name: 'Avalanche', logo: AvalancheLogo, color: '#E84142' },
+    findings: { critical: 0, high: 0, medium: 0, low: 1, info: 2 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/StackFi-Avax-Security-Audit.md',
+    description: 'Gearbox Protocol V3 fork for leveraged yield farming on Avalanche.',
+    socials: { twitter: 'https://x.com/stackfibase', discord: 'https://discord.com/invite/WwdrKyyfnZ' },
+  },
+  // DTreon (BNB Chain)
+  {
+    name: 'DTreon Platform Security Review',
+    date: 'January 2026',
+    client: 'DTreon',
+    chain: { name: 'BNB Chain', logo: BNBChainLogo, color: '#F3BA2F' },
+    findings: { critical: 0, high: 1, medium: 3, low: 3, info: 0 },
+    pdfUrl: 'https://raw.githubusercontent.com/Lefgk/StoneWall/main/audits/DTreon-Security-Audit.md',
+    description: 'Web3 Patreon: subscriptions, PPV content, DMs, tips, and profit-sharing staking.',
+    socials: { twitter: 'https://x.com/Dtreon_Official', discord: 'https://discord.gg/jUdwMWfEtJ' },
   },
 ]
 
