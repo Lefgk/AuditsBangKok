@@ -72,6 +72,17 @@ const MANUAL_AUDITS = [
     description: 'Token & Farm Factory',
     socials: { twitter: 'https://x.com/MonadLaunchgrid', discord: 'https://discord.gg/AhYKdnCr' },
   },
+  {
+    name: 'MonadGrid Marketplace',
+    date: 'Jan 2026',
+    client: 'MonadGrid',
+    chain: { name: 'Monad', logo: MonadLogo, color: '#836EF9' },
+    findings: { critical: 0, high: 0, medium: 2, low: 4, info: 2 },
+    sloc: 450,
+    pdfUrl: 'https://github.com/Lefgk/StoneWall/raw/main/audits/MonadGridMarketplace-Security-Audit.pdf',
+    description: 'NFT Marketplace with offers & royalties',
+    socials: { twitter: 'https://x.com/MonadLaunchgrid', discord: 'https://discord.gg/AhYKdnCr' },
+  },
   // PulseFun (PulseChain)
   {
     name: 'PulseFun Betting',
