@@ -219,41 +219,41 @@ export function Audits() {
 
         {/* Audits Grid */}
         {!loading && audits.length > 0 && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 max-w-7xl mx-auto">
             {audits.map((audit, index) => (
               <div
                 key={index}
-                className="audit-card p-6 cursor-pointer gold-shimmer"
+                className="audit-card p-4 cursor-pointer gold-shimmer"
                 onClick={() => setSelectedAudit(audit)}
               >
                 {/* Header */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="feature-icon">
-                    <FileText className="w-6 h-6" />
+                <div className="flex items-start justify-between mb-2">
+                  <div className="feature-icon w-8 h-8">
+                    <FileText className="w-4 h-4" />
                   </div>
                   {audit.size && (
-                    <span className="text-xs text-[#9CA3AF] bg-white/5 px-3 py-1 rounded-full">
+                    <span className="text-[10px] text-[#9CA3AF] bg-white/5 px-2 py-0.5 rounded-full">
                       {audit.size}
                     </span>
                   )}
                 </div>
 
                 {/* Title */}
-                <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2">
+                <h3 className="text-sm font-semibold text-white mb-1.5 line-clamp-2">
                   {audit.name}
                 </h3>
 
                 {/* Chain Badge */}
                 {audit.chain && (
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
                     <div
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
+                      className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium"
                       style={{
                         backgroundColor: `${audit.chain.color}15`,
                         border: `1px solid ${audit.chain.color}40`
                       }}
                     >
-                      <audit.chain.logo className="w-4 h-4" />
+                      <audit.chain.logo className="w-3 h-3" />
                       <span style={{ color: audit.chain.color }}>{audit.chain.name}</span>
                     </div>
                   </div>
@@ -261,11 +261,11 @@ export function Audits() {
 
                 {/* Client & Date */}
                 {(audit.client || audit.date) && (
-                  <div className="flex items-center gap-4 text-sm text-[#9CA3AF] mb-4">
+                  <div className="flex items-center gap-2 text-xs text-[#9CA3AF] mb-2">
                     {audit.client && <span className="text-[#D4AF37]">{audit.client}</span>}
                     {audit.date && (
                       <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
+                        <Calendar className="w-2.5 h-2.5" />
                         {audit.date}
                       </span>
                     )}
@@ -274,52 +274,52 @@ export function Audits() {
 
                 {/* Findings Summary */}
                 {audit.findings && (
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-1 mb-2">
                     {audit.findings.critical > 0 && (
-                      <span className="severity-critical">{audit.findings.critical} Critical</span>
+                      <span className="severity-critical text-[10px] px-1.5 py-0.5">{audit.findings.critical}C</span>
                     )}
                     {audit.findings.high > 0 && (
-                      <span className="severity-high">{audit.findings.high} High</span>
+                      <span className="severity-high text-[10px] px-1.5 py-0.5">{audit.findings.high}H</span>
                     )}
                     {audit.findings.medium > 0 && (
-                      <span className="severity-medium">{audit.findings.medium} Medium</span>
+                      <span className="severity-medium text-[10px] px-1.5 py-0.5">{audit.findings.medium}M</span>
                     )}
                     {audit.findings.low > 0 && (
-                      <span className="severity-low">{audit.findings.low} Low</span>
+                      <span className="severity-low text-[10px] px-1.5 py-0.5">{audit.findings.low}L</span>
                     )}
                     {audit.findings.info > 0 && (
-                      <span className="severity-info">{audit.findings.info} Info</span>
+                      <span className="severity-info text-[10px] px-1.5 py-0.5">{audit.findings.info}I</span>
                     )}
                   </div>
                 )}
 
-                {/* Description */}
+                {/* Description - hidden on smaller cards */}
                 {audit.description && (
-                  <p className="text-[#9CA3AF] text-sm mb-4 line-clamp-2">
+                  <p className="text-[#9CA3AF] text-[11px] mb-2 line-clamp-2 hidden lg:block">
                     {audit.description}
                   </p>
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-4 mt-auto pt-4 border-t border-[rgba(212,175,55,0.1)]">
+                <div className="flex gap-3 mt-auto pt-2 border-t border-[rgba(212,175,55,0.1)]">
                   <a
                     href={audit.pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-[#D4AF37] hover:text-[#F4C430] transition-colors font-medium"
+                    className="flex items-center gap-1 text-xs text-[#D4AF37] hover:text-[#F4C430] transition-colors font-medium"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <ExternalLink className="w-4 h-4" />
+                    <ExternalLink className="w-3 h-3" />
                     View
                   </a>
                   <a
                     href={audit.pdfUrl}
                     download
-                    className="flex items-center gap-2 text-sm text-[#9CA3AF] hover:text-white transition-colors font-medium"
+                    className="flex items-center gap-1 text-xs text-[#9CA3AF] hover:text-white transition-colors font-medium"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Download className="w-4 h-4" />
-                    Download
+                    <Download className="w-3 h-3" />
+                    DL
                   </a>
                 </div>
               </div>
