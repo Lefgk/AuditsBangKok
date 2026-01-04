@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, ExternalLink, Download, Calendar, X, Shield, AlertTriangle, CheckCircle, Code } from 'lucide-react'
+import { FileText, ExternalLink, Download, Calendar, X } from 'lucide-react'
 import { StonewallLogo } from './StonewallLogo'
 import { MonadLogo, PulseChainLogo, AvalancheLogo, BNBChainLogo } from './ChainLogos'
 
@@ -131,21 +131,6 @@ export function Audits() {
     setLoading(false)
   }, [])
 
-  // Calculate stats
-  const stats = {
-    totalAudits: audits.length,
-    totalFindings: audits.reduce((acc, a) => {
-      const f = a.findings || {}
-      return acc + (f.critical || 0) + (f.high || 0) + (f.medium || 0) + (f.low || 0) + (f.info || 0)
-    }, 0),
-    criticalHigh: audits.reduce((acc, a) => {
-      const f = a.findings || {}
-      return acc + (f.critical || 0) + (f.high || 0)
-    }, 0),
-    totalSLOC: audits.reduce((acc, a) => acc + (a.sloc || 0), 0),
-    chains: [...new Set(audits.map(a => a.chain?.name).filter(Boolean))].length,
-  }
-
   const getTotalFindings = (findings) => {
     if (!findings) return 0
     return (findings.critical || 0) + (findings.high || 0) + (findings.medium || 0) + (findings.low || 0) + (findings.info || 0)
@@ -166,38 +151,6 @@ export function Audits() {
           <p className="section-subtitle">
             Security reviews completed by Stonewall. Full reports available for download.
           </p>
-        </div>
-
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto mb-12">
-          <div className="card-highlight p-6 text-center">
-            <div className="flex justify-center mb-2">
-              <Shield className="w-6 h-6 text-[#D4AF37]" />
-            </div>
-            <div className="text-3xl font-bold text-white">{stats.totalAudits}</div>
-            <div className="text-sm text-[#9CA3AF]">Total Audits</div>
-          </div>
-          <div className="card-highlight p-6 text-center">
-            <div className="flex justify-center mb-2">
-              <AlertTriangle className="w-6 h-6 text-[#D4AF37]" />
-            </div>
-            <div className="text-3xl font-bold text-white">{stats.totalFindings}</div>
-            <div className="text-sm text-[#9CA3AF]">Issues Found</div>
-          </div>
-          <div className="card-highlight p-6 text-center">
-            <div className="flex justify-center mb-2">
-              <CheckCircle className="w-6 h-6 text-[#D4AF37]" />
-            </div>
-            <div className="text-3xl font-bold text-white">{stats.criticalHigh}</div>
-            <div className="text-sm text-[#9CA3AF]">Critical/High</div>
-          </div>
-          <div className="card-highlight p-6 text-center">
-            <div className="flex justify-center mb-2">
-              <Code className="w-6 h-6 text-[#D4AF37]" />
-            </div>
-            <div className="text-3xl font-bold text-white">{(stats.totalSLOC / 1000).toFixed(1)}k</div>
-            <div className="text-sm text-[#9CA3AF]">Lines Reviewed</div>
-          </div>
         </div>
 
         {/* Loading State */}
