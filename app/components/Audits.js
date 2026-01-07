@@ -133,10 +133,10 @@ const MANUAL_AUDITS = [
     client: 'StackFi',
     logo: '/projects/stackfi.png',
     chain: { name: 'Avalanche', logo: AvalancheLogo, color: '#E84142' },
-    findings: { critical: 0, high: 0, medium: 0, low: 1, info: 2 },
-    sloc: 550,
+    findings: { critical: 0, high: 1, medium: 3, low: 6, info: 5 },
+    sloc: 3450,
     pdfUrl: 'https://github.com/Lefgk/StoneWall/raw/main/audits/StackFi-Avax-Security-Audit.pdf',
-    description: 'Gearbox V3 fork',
+    description: 'Gearbox V3 fork with Aave V3 adapters & position tracking',
     socials: { twitter: 'https://x.com/stackfibase', discord: 'https://discord.com/invite/WwdrKyyfnZ' },
   },
   // DTreon (BNB Chain)
