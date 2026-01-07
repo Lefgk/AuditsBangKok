@@ -378,7 +378,7 @@ export function Audits() {
                   {/* Actions */}
                   <div className="col-span-1 md:col-span-2 flex justify-end gap-2">
                     <a
-                      href={audit.pdfUrl}
+                      href={audit.pdfUrl.replace('/raw/', '/blob/')}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#D4AF37] hover:text-[#F4C430] bg-[rgba(212,175,55,0.1)] hover:bg-[rgba(212,175,55,0.15)] rounded-lg transition-colors"
