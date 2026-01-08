@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  /* Bangkok Gold Theme */
+  /*  Gold Theme */
   --accent-gold: #D4AF37;
   --accent-gold-light: #F4C430;
   --accent-gold-dark: #C9A227;
@@ -337,13 +337,25 @@ body {
 
 /* Animations */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
 }
 
 @keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
 }
 
 .animate-float {
@@ -385,7 +397,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Link hover effect - Gold */
@@ -476,12 +490,10 @@ body {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 40%,
-    rgba(212, 175, 55, 0.1) 50%,
-    transparent 60%
-  );
+  background: linear-gradient(45deg,
+      transparent 40%,
+      rgba(212, 175, 55, 0.1) 50%,
+      transparent 60%);
   transform: rotate(45deg);
   transition: all 0.5s ease;
   opacity: 0;
@@ -493,8 +505,13 @@ body {
 }
 
 @keyframes shimmer-pass {
-  0% { transform: translateX(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) rotate(45deg); }
+  0% {
+    transform: translateX(-100%) rotate(45deg);
+  }
+
+  100% {
+    transform: translateX(100%) rotate(45deg);
+  }
 }
 
 /* Selection color */

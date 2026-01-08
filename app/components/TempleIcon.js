@@ -1,6 +1,6 @@
 'use client'
 
-// Wat Arun Temple Icon - Bangkok Landmark
+// Wat Arun Temple Icon -  Landmark
 export function TempleIcon({ className = "w-8 h-8", gradient = true }) {
   return (
     <svg
